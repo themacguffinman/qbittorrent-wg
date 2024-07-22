@@ -16,7 +16,7 @@ docker run \
 	--platform linux/amd64 \
 	--cap-add=NET_ADMIN \
 	--sysctl net.ipv4.conf.all.src_valid_mark=1 \
-	-p 4722:8080 \
+	-p 8080:8080 \
 	-e WEBUI_PORT=8080 \
 	-e TZ=America/New_York \
 	-e PUID="$(id -u $USER)" \
@@ -35,24 +35,24 @@ The only required parameters are the `--cap-add=...`, `--sysctl ...`, and `-e WG
 
 ### Parameters
 
-| Parameter        | Description                                                                                                                                                      |
-|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `$WEBUI_PORT`      | Change the port that the qBittorrent WebUI listens on inside the container. Default: 8080                                                                        |
-| `$TZ`              | Change the container timezone. Must be a canonical timezone, pick a TZ identifier from this [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
-| `$PUID`            | Run qBittorrent with this user ID to support the right file permissions on mounted volumes                                                                       |
-| `$PGID`            | Run qBittorrent with this group ID to support the right file permissions on mounted volumes                                                                      |
-| `$WG_INTERFACE`    | Name of the Wireguard conf file mounted to `/wg_confs/${WG_INTERFACE}.conf` (omit the `.conf` file extension from the parameter)                                 |
-| `$TORRENTING_PORT` | Select a open port for seeding as an active node. This requires port forwarding from your Wireguard server.                                                      |
+| Parameter        | Description                                                                                                                                                                                                                                                                   |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `$WEBUI_PORT`      | Change the port that the qBittorrent WebUI listens on inside the container. Make sure this is the same as the Docker host port (ie. `docker run -p <host-port>:<webui-port>`) since the WebUI will reject requests with a different port in the HTTP host name. Default: 8080 |
+| `$TZ`              | Change the container timezone. Must be a canonical timezone, pick a TZ identifier from this [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)                                                                                                              |
+| `$PUID`            | Run qBittorrent with this user ID to support the right file permissions on mounted volumes                                                                                                                                                                                    |
+| `$PGID`            | Run qBittorrent with this group ID to support the right file permissions on mounted volumes                                                                                                                                                                                   |
+| `$WG_INTERFACE`    | Name of the Wireguard conf file mounted to `/wg_confs/${WG_INTERFACE}.conf` (omit the `.conf` file extension from the parameter)                                                                                                                                              |
+| `$TORRENTING_PORT` | Select a open port for seeding as an active node. This requires port forwarding from your Wireguard server.                                                                                                                                                                   |
 
 ### Volumes
 
 | Container path  | Description                                                     |
 |-----------------|-----------------------------------------------------------------|
-| /config         | Contains qBittorrent configuration files                        |
-| /wg_confs       | Contains Wireguard conf files that can be used in $WG_INTERFACE |
-| /downloads      | Default qBittorrent download location.                          |
-| /temp_downloads | Default qBittorrent incomplete download location.               |
-| /torrent_export | Default qBittorrent location to copy .torrent files to.         |
+| `/config`         | Contains qBittorrent configuration files                        |
+| `/wg_confs`       | Contains Wireguard conf files that can be used in $WG_INTERFACE |
+| `/downloads`      | Default qBittorrent download location.                          |
+| `/temp_downloads` | Default qBittorrent incomplete download location.               |
+| `/torrent_export` | Default qBittorrent location to copy .torrent files to.         |
 
 ## How the networking works
 This container is designed to be run in the default bridge network mode.
