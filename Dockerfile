@@ -2,9 +2,9 @@ FROM debian:testing-slim@sha256:7aa6005592145de753828ada9a9da8b28d1037b389e5773f
 LABEL authors="josh"
 
 USER root
-ENV HOME /config
-ENV XDG_CONFIG_HOME /config
-ENV XDG_DATA_HOME /config
+ENV HOME=/config
+ENV XDG_CONFIG_HOME=/config
+ENV XDG_DATA_HOME=/config
 
 ARG DEBIAN_FRONTEND=noninteractive
 
