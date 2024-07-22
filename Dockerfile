@@ -59,6 +59,7 @@ RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz \
     && tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz \
     && rm -f /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-x86_64.tar.xz
 
+# wg-quick runs sysctl but you can't change sysctl settings inside a container, so just fake it to let wg-quick succeed
 COPY fake_sysctl.sh /usr/sbin/sysctl
 
 COPY ./default_qbittorrent.conf /default/qBittorrent.conf
