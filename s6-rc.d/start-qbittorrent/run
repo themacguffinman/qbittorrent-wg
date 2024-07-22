@@ -1,0 +1,10 @@
+#!/command/with-contenv bash
+set -e
+set -o pipefail
+
+WEBUI_PORT=${WEBUI_PORT:-8080}
+if [[ -n "${TORRENTING_PORT}" ]]; then
+    TORRENTING_PORT_ARG="--torrenting-port=${TORRENTING_PORT}"
+fi
+
+exec s6-setuidgid qbt /usr/bin/qbittorrent-nox --webui-port="${WEBUI_PORT}" ${TORRENTING_PORT_ARG}
