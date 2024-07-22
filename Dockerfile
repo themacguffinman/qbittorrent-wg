@@ -10,20 +10,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
     && apt-get install -y \
-        tzdata=2024a-4 \
-        bash=5.2.21-2.1 \
-        coreutils=9.4-3.1 \
         qbittorrent-nox=4.6.5-1+b1 \
         wireguard=1.0.20210914-1.1 \
-        passwd=1:4.15.3-2 \
         iproute2=6.9.0-1 \
         openresolv=3.13.2-1 \
-        util-linux=2.40.2-1 \
-        sed=4.9-2 \
         iptables=1.8.10-4 \
         xz-utils=5.6.2-2 \
         # Debugging tools
-        findutils=4.10.0-2 \
+        traceroute=1:2.1.5-1 \
         iputils-ping=3:20240117-1 \
         iputils-tracepath=3:20240117-1 \
         curl=8.8.0-4 \
