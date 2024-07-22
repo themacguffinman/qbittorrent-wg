@@ -8,6 +8,8 @@ cd /path/to/repo
 docker build --platform=linux/amd64 -t themacguffinman/qbittorrent-wg:latest .
 ```
 
+## Usage
+
 Example run command
 ```bash
 docker run \
@@ -28,3 +30,36 @@ docker run \
 	-v ~/torrent_export:/torrent_export \
 	themacguffinman/qbittorrent-wg:latest
 ```
+
+The only required parameters are the `--cap-add=...`, `--sysctl ...`, and `-e WG_INTERFACE=...`. The rest are optional.
+
+### Parameters
+
+| Parameter        | Description                                                                                                                                                      |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `$WEBUI_PORT`      | Change the port that the qBittorrent WebUI listens on inside the container. Default: 8080                                                                        |
+| `$TZ`              | Change the container timezone. Must be a canonical timezone, pick a TZ identifier from this [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
+| `$PUID`            | Run qBittorrent with this user ID to support the right file permissions on mounted volumes                                                                       |
+| `$PGID`            | Run qBittorrent with this group ID to support the right file permissions on mounted volumes                                                                      |
+| `$WG_INTERFACE`    | Name of the Wireguard conf file mounted to `/wg_confs/${WG_INTERFACE}.conf` (omit the `.conf` file extension from the parameter)                                 |
+| `$TORRENTING_PORT` | Select a open port for seeding as an active node. This requires port forwarding from your Wireguard server.                                                      |
+
+### Volumes
+
+| Container path  | Description                                                     |
+|-----------------|-----------------------------------------------------------------|
+| /config         | Contains qBittorrent configuration files                        |
+| /wg_confs       | Contains Wireguard conf files that can be used in $WG_INTERFACE |
+| /downloads      | Default qBittorrent download location.                          |
+| /temp_downloads | Default qBittorrent incomplete download location.               |
+| /torrent_export | Default qBittorrent location to copy .torrent files to.         |
+
+## How the networking works
+This container is designed to be run in the default bridge network mode.
+
+Internally, it uses `wg-quick up` to apply your Wireguard conf.
+
+### Firewall 
+To ensure qBittorrent doesn't leak traffic outside the Wireguard connection, `iptables` is used to block all outbound non-Wireguard traffic, with the exception of traffic initiated from inbound connections so WebUI can work.
+
+The `iptables` rules are defined in [s6-rc.d/init-wireguard/run_up.sh](s6-rc.d/init-wireguard/run_up.sh)
