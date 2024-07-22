@@ -2,8 +2,8 @@
 set -e
 set -o pipefail
 if [[ -n "${TZ}" ]]; then
-	echo "${TZ}" > /etc/timezone
 	ln -sf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+	dpkg-reconfigure --frontend=noninteractive tzdata
 fi
 
 if [[ -n "${PUID}" || -n "${PGID}" ]]; then
