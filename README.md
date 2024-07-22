@@ -1,3 +1,7 @@
+# qbittorrent-wg ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/themacguffinman/qbittorrent-wg/latest?label=Docker%20Hub&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fthemacguffinman%2Fqbittorrent-wg)
+
+Run headless qBittorrent wrapped by WireGuard all inside a Docker container.
+
 Build the Dockerfile
 ```bash
 cd /path/to/repo
