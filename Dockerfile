@@ -6,6 +6,7 @@ ENV HOME=/config
 ENV XDG_CONFIG_HOME=/config
 ENV XDG_DATA_HOME=/config
 
+ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
@@ -48,10 +49,12 @@ RUN apt-get update -y \
 ARG S6_OVERLAY_VERSION=3.2.0.0
 ADD "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
     "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz" \
+    "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-aarch64.tar.xz" \
+    "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-arm.tar.xz" \
+    "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-armhf.tar.xz" \
+    install_s6.sh \
     /tmp/
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz \
-    && tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz \
-    && rm -f /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-x86_64.tar.xz
+RUN /tmp/install_s6.sh && rm /tmp/*
 
 # wg-quick runs sysctl but you can't change sysctl settings inside a container, so just fake it to let wg-quick succeed
 COPY fake_sysctl.sh /usr/sbin/sysctl
