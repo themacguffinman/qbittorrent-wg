@@ -2,12 +2,6 @@
 
 Run headless qBittorrent wrapped by WireGuard all inside a Docker container.
 
-Build the Dockerfile
-```bash
-cd /path/to/repo
-docker build --platform=linux/amd64 -t themacguffinman/qbittorrent-wg:latest .
-```
-
 ## Usage
 
 Example run command
@@ -31,7 +25,7 @@ docker run \
 	-v ~/downloads:/downloads \
 	-v ~/temp_downloads:/temp_downloads \
 	-v ~/torrent_export:/torrent_export \
-	themacguffinman/qbittorrent-wg:latest
+	docker.io/themacguffinman/qbittorrent-wg:latest
 ```
 
 The only required parameters are the `--cap-add=...`, `--sysctl ...`, and `-e WG_INTERFACE=...`. The rest are optional.
@@ -70,3 +64,15 @@ To ensure qBittorrent doesn't leak traffic outside the Wireguard connection, `ip
 There's also a block on all inbound Wireguard traffic to your `$WEBUI_PORT` to prevent others in the Wireguard network from accessing your qBittorrent WebUI.
 
 The `iptables` rules are defined in [s6-rc.d/init-wireguard/run_up.sh](s6-rc.d/init-wireguard/run_up.sh)
+
+## Building
+Build the Dockerfile
+```bash
+docker build --platform=linux/amd64 -t themacguffinman/qbittorrent-wg:latest .
+```
+
+### Platforms
+- `linux/amd64`
+- `linux/arm64`
+- `linux/arm/v7`
+- `linux/arm/v6`
