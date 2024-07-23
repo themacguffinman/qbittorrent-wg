@@ -15,6 +15,7 @@ Example run command
 docker run \
 	--platform linux/amd64 \
 	--cap-add=NET_ADMIN \
+	--cap-add=SYS_NICE \
 	--sysctl net.ipv4.conf.all.src_valid_mark=1 \
 	-p 8080:8080 \
 	-e WEBUI_PORT=8080 \
@@ -23,6 +24,8 @@ docker run \
 	-e PGID="$(id -g $USER)" \
 	-e WG_INTERFACE="my_wg" \
 	-e TORRENTING_PORT=9999 \
+	-e NICE=9 \
+	-e IONICE_CLASS=idle \
 	-v ~/qbt:/config \
 	-v ~/wg_confs:/wg_confs \
 	-v ~/downloads:/downloads \
@@ -35,14 +38,16 @@ The only required parameters are the `--cap-add=...`, `--sysctl ...`, and `-e WG
 
 ### Parameters
 
-| Parameter        | Description                                                                                                                                                                                                                                                                   |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Parameter          | Description                                                                                                                                                                                                                                                                   |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `$WEBUI_PORT`      | Change the port that the qBittorrent WebUI listens on inside the container. Make sure this is the same as the Docker host port (ie. `docker run -p <host-port>:<webui-port>`) since the WebUI will reject requests with a different port in the HTTP host name. Default: 8080 |
 | `$TZ`              | Change the container timezone. Must be a canonical timezone, pick a TZ identifier from this [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)                                                                                                              |
 | `$PUID`            | Run qBittorrent with this user ID to support the right file permissions on mounted volumes                                                                                                                                                                                    |
 | `$PGID`            | Run qBittorrent with this group ID to support the right file permissions on mounted volumes                                                                                                                                                                                   |
 | `$WG_INTERFACE`    | Name of the Wireguard conf file mounted to `/wg_confs/${WG_INTERFACE}.conf` (omit the `.conf` file extension from the parameter)                                                                                                                                              |
 | `$TORRENTING_PORT` | Select a open port for seeding as an active node. This requires port forwarding from your Wireguard server.                                                                                                                                                                   |
+| `$NICE`            | Set the CPU scheduling priority of qBittorrent with `nice -n $NICE`. Default is `10`, set to `skip` if you don't want to set a niceness. Unless you use `skip`, you must run the container with `--cap-add=SYS_NICE`.                                                         |
+| `$IONICE_CLASS`    | Set the I/O scheduling priority of qBittorrent with `ionice -c $IONICE_CLASS`. Default is `idle`, set to `skip` if you don't want to set a niceness. Unless you use `skip`, you must run the container with `--cap-add=SYS_NICE`.                                             |
 
 ### Volumes
 
