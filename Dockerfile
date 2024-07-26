@@ -11,18 +11,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
     && apt-get install -y \
-        qbittorrent-nox=4.6.5-1+b1 \
-        wireguard=1.0.20210914-1.1 \
-        iproute2=6.9.0-1 \
-        openresolv=3.13.2-1 \
-        iptables=1.8.10-4 \
-        xz-utils=5.6.2-2 \
+        qbittorrent-nox \
+        wireguard \
+        iproute2 \
+        openresolv \
+        iptables \
+        xz-utils \
         # Debugging tools
-        traceroute=1:2.1.5-1 \
-        iputils-ping=3:20240117-1 \
-        iputils-tracepath=3:20240117-1 \
-        curl=8.8.0-4 \
-        dnsutils=1:9.19.24-185-g392e7199df2-1 \
+        traceroute \
+        iputils-ping \
+        iputils-tracepath \
+        curl \
+        dnsutils \
     && apt-get clean -y \
     && groupadd -o -g 100 qbt \
     && useradd -M -o -s /bin/bash -u 100 -g 100 qbt \
