@@ -61,7 +61,7 @@ Internally, it uses `wg-quick up` to apply your Wireguard conf.
 ### Firewall 
 To ensure qBittorrent doesn't leak traffic outside the Wireguard connection, `iptables` is used to block all outbound non-Wireguard traffic, with the exception of traffic initiated from inbound connections so WebUI can work.
 
-There's also a block on all inbound Wireguard traffic to your `$WEBUI_PORT` to prevent others in the Wireguard network from accessing your qBittorrent WebUI.
+To ensure others on your Wireguard network can't access things like the WebUI, there's also a block on all inbound traffic from Wireguard, except if it was initiated by an outbound connection or targets the `$TORRENTING_PORT` (for seeding).
 
 The `iptables` rules are defined in [s6-rc.d/init-wireguard/run_up.sh](s6-rc.d/init-wireguard/run_up.sh)
 
