@@ -31,4 +31,4 @@ if [ ! -f "${QBT_CONFIG}" ]; then
 	cp /default/qBittorrent.conf "${QBT_CONFIG}"
 fi
 
-ln -s "/wg_confs/${WG_INTERFACE}.conf" "/etc/wireguard/wg0.conf"
+ln -s "/wg_confs/${WG_INTERFACE}.conf" "/etc/wireguard/original.conf"
