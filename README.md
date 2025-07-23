@@ -1,4 +1,4 @@
-# qbittorrent-wg ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/themacguffinman/qbittorrent-wg/latest?label=Docker%20Hub&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fthemacguffinman%2Fqbittorrent-wg)
+# qbittorrent-wg ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/themacguffinman/qbittorrent-wg/latest?label=Docker%20Hub&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fthemacguffinman%2Fqbittorrent-wg) [![Docker Image Build](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/build-image.yml/badge.svg)](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/build-image.yml)
 
 Run headless qBittorrent wrapped by WireGuard all inside a Docker container.
 
@@ -58,7 +58,7 @@ This container is designed to be run in the default bridge network mode.
 
 Internally, it uses `wg-quick up` to apply your Wireguard conf.
 
-### Firewall 
+### Firewall
 To ensure qBittorrent doesn't leak traffic outside the Wireguard connection, `iptables` is used to block all outbound non-Wireguard traffic, with the exception of traffic initiated from inbound connections so WebUI can work.
 
 To ensure others on your Wireguard network can't access things like the WebUI, there's also a block on all inbound traffic from Wireguard, except if it was initiated by an outbound connection or targets the `$TORRENTING_PORT` (for seeding).
