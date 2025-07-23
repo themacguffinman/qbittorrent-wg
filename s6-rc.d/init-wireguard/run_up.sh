@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 WEBUI_PORT=${WEBUI_PORT:-8080}
-FWMARK=51820
+FWMARK=${FWMARK:-52180}
 
 cp -L "/etc/wireguard/original.conf" "/etc/wireguard/wg0.conf"
 sed -i "/\[Interface\]/a FwMark = ${FWMARK}" "/etc/wireguard/wg0.conf"

@@ -42,6 +42,7 @@ The only required parameters are the `--cap-add=...`, `--sysctl ...`, and `-e WG
 | `$TORRENTING_PORT` | Select a open port for seeding as an active node. This requires port forwarding from your Wireguard server.                                                                                                                                                                   |
 | `$NICE`            | Set the CPU scheduling priority of qBittorrent with `nice -n $NICE`. Default is `10`, set to `skip` if you don't want to set a niceness. Unless you use `skip`, you must run the container with `--cap-add=SYS_NICE`.                                                         |
 | `$IONICE_CLASS`    | Set the I/O scheduling priority of qBittorrent with `ionice -c $IONICE_CLASS`. Default is `idle`, set to `skip` if you don't want to set a niceness. Unless you use `skip`, you must run the container with `--cap-add=SYS_NICE`.                                             |
+| `$FWMARK`          | Sets the firewall mark for Wireguard packets, this is used by the container's internal iptables rules to allow Wireguard traffic to reach the internet. Should be a random number, default is `52180`.                                                                        |
 
 ### Volumes
 
