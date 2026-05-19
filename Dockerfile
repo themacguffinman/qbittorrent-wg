@@ -1,4 +1,4 @@
-FROM debian:testing-20250203-slim@sha256:4c2c359e415b4d1efac848fc8c6867d505c836e700f7641682cb032eba7dbcb5
+FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
 LABEL authors="josh"
 
 USER root
@@ -9,18 +9,18 @@ ENV XDG_DATA_HOME=/config
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 
-# add an additional snapshot-based source that contains the desired qbittorrent-nox version
-COPY <<"EOT" /etc/apt/sources.list.d/snapshot.sources
+# trixie-backports provides newer qbittorrent-nox than stable
+COPY <<"EOT" /etc/apt/sources.list.d/backports.sources
 Types: deb
-URIs: http://snapshot.debian.org/archive/debian/20250203T000000Z
-Suites: testing
+URIs: http://deb.debian.org/debian
+Suites: trixie-backports
 Components: main
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 EOT
 
-RUN apt-get -o Acquire::Check-Valid-Until=false update -y \
+RUN apt-get update -y \
 	&& apt-get install -y \
-	qbittorrent-nox=5.0.3-2 \
+	qbittorrent-nox=5.1.4-1~bpo13+1 \
 	wireguard \
 	iproute2 \
 	openresolv \
