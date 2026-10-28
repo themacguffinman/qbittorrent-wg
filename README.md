@@ -13,7 +13,7 @@ docker run \
 	--sysctl net.ipv4.conf.all.src_valid_mark=1 \
 	-p 8080:8080 \
 	-e WEBUI_PORT=8080 \
-	-e TZ=America/New_York \
+	-e TZ=UTC \
 	-e PUID="$(id -u $USER)" \
 	-e PGID="$(id -g $USER)" \
 	-e WG_INTERFACE="my_wg" \
