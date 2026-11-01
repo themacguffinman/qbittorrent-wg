@@ -2,6 +2,15 @@ name: Test Docker Image
 
 on:
   pull_request:
+    paths:
+      - .github/workflows/test-image.yml
+      - tests/**
+      - Dockerfile
+      - versions.env
+      - install_s6.sh
+      - fake_sysctl.sh
+      - default_qbittorrent.conf
+      - s6-rc.d/**
 
 jobs:
   test:
