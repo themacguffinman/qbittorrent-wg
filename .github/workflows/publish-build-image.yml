@@ -2,8 +2,15 @@ name: Publish and Build Docker Image
 
 on:
   push:
-    tags:
-      - v[0-9]+.*
+    branches:
+      - master
+    paths:
+      - .github/workflows/publish-build-image.yml
+      - Dockerfile
+      - install_s6.sh
+      - fake_sysctl.sh
+      - default_qbittorrent.conf
+      - s6-rc.d/**
 
 jobs:
   build:
@@ -39,6 +46,6 @@ jobs:
           tags: |
             ${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
           labels: |
             ${{ steps.meta.outputs.labels }}
