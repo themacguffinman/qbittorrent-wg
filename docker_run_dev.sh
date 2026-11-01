@@ -5,7 +5,7 @@ if [[ -f "$SCRIPT_DIR/dev.env" ]]; then
 	ENV_FILE_ARGS=(--env-file "$SCRIPT_DIR/dev.env")
 fi
 
-docker build --platform=linux/arm64 -t themacguffinman/qbittorrent-wg:latest .
+docker build --platform=linux/arm64 $(sed 's/^/--build-arg /' "$SCRIPT_DIR/versions.env") -t themacguffinman/qbittorrent-wg:latest .
 docker run \
 	-it \
 	--rm \

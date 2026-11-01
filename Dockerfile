@@ -1,4 +1,6 @@
-FROM debian:trixie-slim@sha256:89c1ea91e897f0fe0a3731595330bc45b8bdef4047464a07116f891a94054b31
+# check=skip=InvalidDefaultArgInFrom
+ARG DEBIAN_IMAGE
+FROM ${DEBIAN_IMAGE}
 LABEL authors="josh"
 
 USER root
@@ -9,18 +11,20 @@ ENV XDG_DATA_HOME=/config
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 
-# trixie-backports provides newer qbittorrent-nox than stable
+# stable-backports provides newer qbittorrent-nox than stable
 COPY <<"EOT" /etc/apt/sources.list.d/backports.sources
 Types: deb
 URIs: http://deb.debian.org/debian
-Suites: trixie-backports
+Suites: stable-backports
 Components: main
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 EOT
 
+ARG QBITTORRENT_VERSION
+ARG QBITTORRENT_DEB_REVISION
 RUN apt-get update -y \
 	&& apt-get install -y \
-	qbittorrent-nox=5.1.4-1~bpo13+1 \
+	qbittorrent-nox=${QBITTORRENT_VERSION}-${QBITTORRENT_DEB_REVISION} \
 	wireguard \
 	iproute2 \
 	openresolv \
@@ -55,7 +59,7 @@ RUN apt-get update -y \
 	/temp_downloads \
 	/torrent_export
 
-ARG S6_OVERLAY_VERSION=3.2.3.0
+ARG S6_OVERLAY_VERSION
 ADD "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
 	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz" \
 	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-aarch64.tar.xz" \

@@ -69,7 +69,7 @@ The `iptables` rules are defined in [s6-rc.d/init-wireguard/run_up.sh](s6-rc.d/i
 ## Building
 Build the Dockerfile
 ```bash
-docker build --platform=linux/amd64 -t themacguffinman/qbittorrent-wg:latest .
+docker build --platform=linux/amd64 $(sed 's/^/--build-arg /' versions.env) -t themacguffinman/qbittorrent-wg:latest .
 ```
 
 ### Platforms
