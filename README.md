@@ -1,4 +1,4 @@
-# qbittorrent-wg ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/themacguffinman/qbittorrent-wg/latest?label=Docker%20Hub&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fthemacguffinman%2Fqbittorrent-wg) [![Docker Image Build](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/build-image.yml/badge.svg)](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/build-image.yml)
+# qbittorrent-wg ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/themacguffinman/qbittorrent-wg/latest?label=Docker%20Hub&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fthemacguffinman%2Fqbittorrent-wg) [![Docker Image Build](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/publish-build-image.yml/badge.svg)](https://github.com/themacguffinman/qbittorrent-wg/actions/workflows/publish-build-image.yml)
 
 Run headless qBittorrent wrapped by WireGuard all inside a Docker container.
 
