@@ -1,0 +1,36 @@
+name: Test Docker Image
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      IMAGE: qbittorrent-wg:test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load pinned versions
+        id: versions
+        run: cat versions.env >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: ${{ env.IMAGE }}
+          build-args: |
+            DEBIAN_IMAGE=${{ steps.versions.outputs.DEBIAN_IMAGE }}
+            QBITTORRENT_VERSION=${{ steps.versions.outputs.QBITTORRENT_VERSION }}
+            QBITTORRENT_DEB_REVISION=${{ steps.versions.outputs.QBITTORRENT_DEB_REVISION }}
+            S6_OVERLAY_VERSION=${{ steps.versions.outputs.S6_OVERLAY_VERSION }}
+      - name: Load WireGuard kernel module
+        run: sudo modprobe wireguard
+      - name: Smoke test
+        run: bash tests/smoke.sh "$IMAGE"
