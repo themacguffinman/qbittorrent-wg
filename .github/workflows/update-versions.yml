@@ -1,0 +1,39 @@
+name: Update Pinned Versions
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find updates
+        id: update
+        run: bash .github/scripts/update_versions.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+      # Pull requests created with GITHUB_TOKEN don't trigger pull_request workflows, so use a GitHub App token
+      - name: Create app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.AUTO_UPDATER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.AUTO_UPDATER_APP_PRIVATE_KEY }}
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          add-paths: versions.env
+          branch: automation/update-versions
+          delete-branch: true
+          commit-message: update pinned versions
+          title: Update pinned versions
+          body: Newest versions that were already published 7 days ago. Merging this publishes a new image.
+      - name: Fail if the pinned qBittorrent package is unavailable
+        if: steps.update.outputs.blocked == 'true'
+        run: exit 1
