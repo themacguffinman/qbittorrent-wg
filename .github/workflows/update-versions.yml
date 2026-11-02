@@ -28,6 +28,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
+          sign-commits: true
           add-paths: versions.env
           branch: automation/update-versions
           delete-branch: true
