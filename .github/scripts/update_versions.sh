@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Updates versions.env to the newest versions that were already published 7 days ago, without ever downgrading.
+# QBITTORRENT_DEB_REVISION is exempt from the 7 days and tracks the newest revision in the archive.
 # QBITTORRENT_VERSION is only changed by humans.
 set -euo pipefail
 shopt -s inherit_errexit
 . ./versions.env
 
 CUTOFF=$(date -u -d "7 days ago" +%Y-%m-%dT%H:%M:%SZ)
-SNAPSHOT=$(date -u -d "7 days ago" +%Y%m%dT%H%M%SZ)
 GITHUB_API=https://api.github.com/repos
 blocked=false
 
@@ -106,19 +106,16 @@ revisions() {
 	'
 }
 
-# The archive drops old revisions, so a held revision is only usable if it can still be installed today on all platforms
+# No 7 day hold here, core Debian packages are safe enough
 available=$(for arch in amd64 arm64 armhf armel; do
 	revisions https://deb.debian.org/debian "$arch" | sort -u
 done | sort | uniq -c | awk '$1 == 4 { print $2 }')
-echo "  revisions available today on all platforms: $(list "$available")"
-
-held_revisions=$(revisions "https://snapshot.debian.org/archive/debian/$SNAPSHOT" amd64)
-echo "  revisions in snapshot $SNAPSHOT: $(list "$held_revisions")"
+echo "  revisions available on all platforms: $(list "$available")"
 echo "  current: $QBITTORRENT_DEB_REVISION"
 revision=$QBITTORRENT_DEB_REVISION
-for held_revision in $held_revisions; do
-	if grep -Fxq -- "$held_revision" <<<"$available" && dpkg --compare-versions "$held_revision" gt "$revision"; then
-		revision=$held_revision
+for candidate in $available; do
+	if dpkg --compare-versions "$candidate" gt "$revision"; then
+		revision=$candidate
 	fi
 done
 if [[ "$revision" != "$QBITTORRENT_DEB_REVISION" ]]; then

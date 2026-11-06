@@ -34,7 +34,7 @@ jobs:
           delete-branch: true
           commit-message: update pinned versions
           title: Update pinned versions
-          body: Newest versions that were already published 7 days ago. Merging this publishes a new image.
+          body: Newest versions that were already published 7 days ago (the qbittorrent-nox Debian revision is always the newest). Merging this publishes a new image.
       - name: Fail if the pinned qBittorrent package is unavailable
         if: steps.update.outputs.blocked == 'true'
         run: exit 1
