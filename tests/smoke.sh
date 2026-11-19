@@ -33,12 +33,14 @@ docker exec qbt-test sh -c 'grep -q "^Uid:.100" /proc/$(pidof qbittorrent-nox)/s
 pass=$(docker logs qbt-test 2>&1 | sed -n 's/.*temporary password is provided for this session: //p' | tail -1)
 COOKIES=$(mktemp)
 api() { curl -fs --max-time 5 -b "$COOKIES" -c "$COOKIES" "$@"; }
-api --data-urlencode username=admin --data-urlencode "password=$pass" http://127.0.0.1:$WEBUI_PORT/api/v2/auth/login | grep -qx 'Ok.'
+# Since 5.2.0 a successful login is an empty 204, so check that a session cookie was issued
+api --data-urlencode username=admin --data-urlencode "password=$pass" http://127.0.0.1:$WEBUI_PORT/api/v2/auth/login
+grep -q 'QBT_SID' "$COOKIES"
 version=$(api http://127.0.0.1:$WEBUI_PORT/api/v2/app/version)
 echo "API reports qBittorrent $version"
 [ "$version" = "v$QBITTORRENT_VERSION" ]
 hash=0123456789abcdef0123456789abcdef01234567
-api --data-urlencode "urls=magnet:?xt=urn:btih:$hash&dn=test" http://127.0.0.1:$WEBUI_PORT/api/v2/torrents/add | grep -qx 'Ok.'
+api --data-urlencode "urls=magnet:?xt=urn:btih:$hash&dn=test" http://127.0.0.1:$WEBUI_PORT/api/v2/torrents/add | grep -q '"success_count":1'
 sleep 2
 api http://127.0.0.1:$WEBUI_PORT/api/v2/torrents/info | grep -q "$hash"
 
