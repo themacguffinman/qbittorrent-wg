@@ -22,7 +22,9 @@ EOT
 
 ARG QBITTORRENT_VERSION
 ARG QBITTORRENT_DEB_REVISION
+# upgrade picks up security fixes released after the base image was built
 RUN apt-get update -y \
+	&& apt-get upgrade -y \
 	&& apt-get install -y \
 	qbittorrent-nox=${QBITTORRENT_VERSION}-${QBITTORRENT_DEB_REVISION} \
 	wireguard \

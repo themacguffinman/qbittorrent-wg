@@ -17,6 +17,34 @@ jobs:
         run: bash .github/scripts/update_versions.sh
         env:
           GH_TOKEN: ${{ github.token }}
+      # apt installs whatever deb.debian.org has at build time, so build the image to see which package versions
+      # it would get now; a change opens the pull request, merging it publishes an image with those updates
+      - name: Load pinned versions
+        id: versions
+        if: steps.update.outputs.blocked != 'true'
+        run: cat versions.env >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+        if: steps.update.outputs.blocked != 'true'
+      - name: Build
+        if: steps.update.outputs.blocked != 'true'
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          load: true
+          push: false
+          no-cache: true
+          tags: qbittorrent-wg:packages
+          build-args: |
+            DEBIAN_IMAGE=${{ steps.versions.outputs.DEBIAN_IMAGE }}
+            QBITTORRENT_VERSION=${{ steps.versions.outputs.QBITTORRENT_VERSION }}
+            QBITTORRENT_DEB_REVISION=${{ steps.versions.outputs.QBITTORRENT_DEB_REVISION }}
+            S6_OVERLAY_VERSION=${{ steps.versions.outputs.S6_OVERLAY_VERSION }}
+      - name: Record package versions
+        if: steps.update.outputs.blocked != 'true'
+        run: |
+          docker run --rm --entrypoint dpkg-query qbittorrent-wg:packages -W -f '${Package}=${Version}\n' \
+            | LC_ALL=C sort > package_versions.txt
+          git diff --stat -- package_versions.txt
       # Pull requests created with GITHUB_TOKEN don't trigger pull_request workflows, so use a GitHub App token
       - name: Create app token
         id: app-token
@@ -29,12 +57,17 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           sign-commits: true
-          add-paths: versions.env
+          add-paths: |
+            versions.env
+            package_versions.txt
           branch: automation/update-versions
           delete-branch: true
           commit-message: update pinned versions
           title: Update pinned versions
-          body: Newest versions that were already published 7 days ago (the qbittorrent-nox Debian revision is always the newest). Merging this publishes a new image.
+          body: |
+            `versions.env`: newest versions that were already published 7 days ago (the qbittorrent-nox Debian revision is always the newest).
+            `package_versions.txt`: Debian packages in the linux/amd64 image as built now, other platforms and later builds can differ slightly.
+            Merging this publishes a new image.
       - name: Fail if the pinned qBittorrent package is unavailable
         if: steps.update.outputs.blocked == 'true'
         run: exit 1

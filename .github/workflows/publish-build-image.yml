@@ -8,6 +8,7 @@ on:
       - .github/workflows/publish-build-image.yml
       - Dockerfile
       - versions.env
+      - package_versions.txt
       - install_s6.sh
       - fake_sysctl.sh
       - default_qbittorrent.conf
