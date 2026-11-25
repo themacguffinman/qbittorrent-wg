@@ -1,5 +1,17 @@
 # check=skip=InvalidDefaultArgInFrom
 ARG DEBIAN_IMAGE
+
+# s6-overlay is downloaded and unpacked on the build machine's own platform, so it needs no emulation,
+# and is cached by S6_OVERLAY_VERSION without being downloaded again
+FROM --platform=$BUILDPLATFORM ${DEBIAN_IMAGE} AS s6
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y \
+	&& apt-get install -y --no-install-recommends ca-certificates curl xz-utils
+COPY install_s6.sh /tmp/
+ARG TARGETPLATFORM
+ARG S6_OVERLAY_VERSION
+RUN /tmp/install_s6.sh /s6
+
 FROM ${DEBIAN_IMAGE}
 LABEL authors="josh"
 
@@ -8,8 +20,10 @@ ENV HOME=/config
 ENV XDG_CONFIG_HOME=/config
 ENV XDG_DATA_HOME=/config
 
-ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Changes less often than the packages below, so it goes first to stay cached
+COPY --from=s6 /s6/ /
 
 # stable-backports provides newer qbittorrent-nox than stable
 COPY <<"EOT" /etc/apt/sources.list.d/backports.sources
@@ -22,6 +36,8 @@ EOT
 
 ARG QBITTORRENT_VERSION
 ARG QBITTORRENT_DEB_REVISION
+# Every RUN below sees this ARG, so a change to package_versions.txt reruns the upgrade instead of reusing a cached layer
+ARG PACKAGE_VERSIONS_HASH
 # upgrade picks up security fixes released after the base image was built
 RUN apt-get update -y \
 	&& apt-get upgrade -y \
@@ -60,16 +76,6 @@ RUN apt-get update -y \
 	/downloads \
 	/temp_downloads \
 	/torrent_export
-
-ARG S6_OVERLAY_VERSION
-ADD "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
-	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz" \
-	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-aarch64.tar.xz" \
-	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-arm.tar.xz" \
-	"https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-armhf.tar.xz" \
-	install_s6.sh \
-	/tmp/
-RUN /tmp/install_s6.sh && rm /tmp/*
 
 # wg-quick runs sysctl but you can't change sysctl settings inside a container, so just fake it to let wg-quick succeed
 COPY fake_sysctl.sh /usr/sbin/sysctl
